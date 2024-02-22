@@ -11,6 +11,7 @@ cv::Mat ImageProcessor:: applyBlur(const cv:: Mat &inputImage, int kernelSize) {
 }
 
 cv::Mat ImageProcessor::applyCustomThreshold(const cv::Mat &inputImage, int thresholdValue, int maxVal) {
+    
     cv::Mat thresholdedImage = inputImage.clone(); // create a copy of input image 
     int rows = thresholdedImage.rows;
     int cols = thresholdedImage.cols;

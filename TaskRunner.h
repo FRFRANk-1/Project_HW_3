@@ -5,7 +5,7 @@
 
 class TaskRunner {
 public:
-    void runTask1(const std::string& imageFolder, int kernelSize, int thresholdValue, int maxVal, int thresholdType); // Task for thresholding and blurring
+    void runTask1(const std::string& imagePath, int kernelSize, int thresholdValue, int maxVal); // Task for thresholding and blurring
     // Add declarations for other tasks as needed
 };
 

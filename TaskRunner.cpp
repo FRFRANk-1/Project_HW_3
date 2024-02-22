@@ -3,39 +3,46 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 
-void TaskRunner::runTask1(const std::string& imageFolder, int kernelSize, int thresholdValue, int maxVal, int thresholdType) {
-    cv::VideoCapture cap(0); // Open the default camera
-    if (!cap.isOpened()) {
-        std::cerr << "Error: Camera could not be opened." << std::endl;
+void TaskRunner::runTask1(const std::string& imagePath, int kernelSize, int thresholdValue, int maxVal) {
+    // Load the image
+    cv::Mat frame = cv::imread(imagePath);
+    if (frame.empty()) {
+        std::cerr << "Error: Image could not be loaded from " << imagePath << std::endl;
         return;
     }
 
     ImageProcessor processor;
     cv::namedWindow("Original", cv::WINDOW_AUTOSIZE);
-    cv::namedWindow("Processed", cv::WINDOW_AUTOSIZE);
+    cv::namedWindow("Grey", cv::WINDOW_AUTOSIZE);
+    cv::namedWindow("Blurred", cv::WINDOW_AUTOSIZE);
+    cv::namedWindow("Threshold", cv::WINDOW_AUTOSIZE);
 
-    while (true) {
-        cv::Mat frame;
-        cap >> frame; // Capture a new frame
-        if (frame.empty()) break;
+    // Convert to grayscale
+    cv::Mat grayFrame;
+    cv::cvtColor(frame, grayFrame, cv::COLOR_BGR2GRAY);
+    
+    // Apply blur and custom threshold
+    cv::Mat blurred = processor.applyBlur(grayFrame, kernelSize);
+    cv::Mat thresholded = processor.applyCustomThreshold(blurred, thresholdValue, maxVal);
 
-        // Convert to grayscale
-        cv::Mat grayFrame;
-        cv::cvtColor(frame, grayFrame, cv::COLOR_BGR2GRAY);
-        
-        // Larger kernel size for more blurring
-        // Larger threshold value for more white areas
-        // Larger maxVal for brighter white areas
-        // Larger thresholdType for different thresholding methods
+    // Display the resulting frames
+    cv::imshow("Original", frame);
+    cv::imshow("Grey", grayFrame);
+    cv::imshow("Threshold", thresholded);
+    cv::imshow("Blurred", blurred);
 
-        // Apply blur and threshold
-        cv::Mat blurred = processor.applyBlur(grayFrame, kernelSize);
-        cv::Mat thresholded = processor.applyCustomThreshold(blurred, thresholdValue, maxVal);
+    // Ensure output directory exists
+    std::string outputDir = "D:/NEU study file/5330/Project_HW_3/outputs/";
 
-        // Display the resulting frames
-        cv::imshow("Original", frame);
-        cv::imshow("Processed", thresholded);
+    // Save the processed images
+    cv::imwrite(outputDir + "original.jpg", frame);
+    cv::imwrite(outputDir + "thresholded_grey.jpg", grayFrame);
+    cv::imwrite(outputDir + "blurred.jpg", blurred);
+    cv::imwrite(outputDir + "thresholded.jpg", thresholded);
 
-        if (cv::waitKey(30) >= 0) break; // Wait for a keystroke in the window
-    }
+
+     
+
+    // Wait indefinitely until a key is pressed
+    cv::waitKey(0);
 }
