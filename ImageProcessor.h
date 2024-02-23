@@ -19,6 +19,10 @@ public:
     cv::Mat applyEroded(const cv::Mat &inputImage, int erosion_size);
 
     void ImageProcessor::findConnectedComponents(const cv::Mat &inputImage, cv::Mat &outputImage, int minSize);
+
+    static double calculatePercentFilled(const cv::Mat &stats, int label);
+    static double calculateAspectRatio(const cv::Mat &stats, int label);
+    
 };
 
 #endif // IMAGEPROCESSOR_H

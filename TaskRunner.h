@@ -10,6 +10,8 @@ public:
     void runTask2(const std::string& imagePath, int dilation_size, int erosion_size);
 
     void runTask3(const std::string& imagePath, int minSize);
+
+    void runTask4(const std::string& imagePath, int minSize);
 };
 
 #endif // TASKRUNNER_H

@@ -116,3 +116,18 @@ void ImageProcessor::findConnectedComponents(const cv::Mat &inputImage, cv::Mat 
     // Close the file
     report.close();
 }
+
+double ImageProcessor::calculatePercentFilled(const cv::Mat &stats, int label) {
+    int area = stats.at<int>(label, cv::CC_STAT_AREA);
+    int bboxwidth = stats.at<int>(label, cv::CC_STAT_WIDTH);
+    int bboxheight = stats.at<int>(label, cv::CC_STAT_HEIGHT);
+    double bboxArea = bboxwidth * bboxheight; 
+    return (area / bboxArea) * 100;
+}
+
+double ImageProcessor::calculateAspectRatio(const cv::Mat &stats, int label) {
+    int bboxwidth = stats.at<int>(label, cv::CC_STAT_WIDTH);
+    int bboxheight = stats.at<int>(label, cv::CC_STAT_HEIGHT);
+    return static_cast<double>(bboxwidth) / bboxheight;
+}
+

@@ -48,3 +48,26 @@ Second, blue color region is considered largest connected components that being 
 Last, other random color have been assigned to be considered as other connected components.
 
 terminal input examples -> .\Project_HW_3 3 "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_1/img2p3_15,100,255,5/thresholded.jpg" 75
+
+## To run task 4:
+
+Observation 1: The green rectangles in the output images is to visualize the axis-aligned bounding boxes of regions that are larger than the specified min_size value(75).
+in the results image of img1p3, img2p3, img5p3, because those image have been applied with morphological filter(dilated + erosion methods) which already smoothering the image, thus those 3 images all have pretty identical central moment location where is located sligthly one the left from the center image. By comparsion, I used one of the unfilter image, img4p3, which is the example image provided from the project resource, have not been applied to any morphological filter, thus the image results have a lot of green dots which represent the centroids of these image region. In conclusion, it is obvious that applied morphological filter before finding the centroid of image is cruicial.
+
+Observation 2: 
+for the task_4, here are the following features calcuated for each connected components.
+- Area: The number of pixcels within the connected components
+- Percent filed: the ratio of the area of connected component of its bounding box represented in percentage
+- Aspect Ratio: The ratio of the width to height of the bounding box, where this feature to help determine the shape and orientation of the component
+- Hu Moments: The set of numbers calculated from the moments of the connected components that are invariant to image transformation.
+
+Taking img2p3 image and report as an examples.
+in the component 1, with the largest area and a precent filed value of 79.9688%, also the component has a aspect ratio that is larger than 1, which mean the image is wider than the height, given this circumstance we could conclude that the component one should be a large gray box.
+in the component 2, with a area number of 12 pixel, which is a very small area but with a high precent filed ratio, presummeably should be the green dot centroid in the image.
+in the component 3, with the area of 98 pixel, percent filled 76.5625% and aspect ratio of 0.125, supposely should be the green vertical line near the right side of the image.
+in the component 4, with the area of 185 pixel, percent filled 88.0925% and aspect ratio of 0.119, which should be the left side long line on the image
+
+terminal input examples -> 
+.\Project_HW_3 4 "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_1/img4p3_15,100,255,5/thresholded.jpg" 5
+
+.\Project_HW_3 4 "D:/NEU study file/5330/Project_HW_3/Proj03Examples/img4p3.png" 5
