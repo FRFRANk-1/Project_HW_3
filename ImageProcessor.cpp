@@ -1,5 +1,8 @@
 #include "ImageProcessor.h"
 #include <opencv2/opencv.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgcodecs.hpp>
 
 // Constructor
 ImageProcessor::ImageProcessor() { }
@@ -37,4 +40,21 @@ cv::Mat ImageProcessor::applyCustomThreshold(const cv::Mat &inputImage, int thre
         }
     }
     return thresholdedImage;
+}
+
+cv::Mat ImageProcessor::applyDilated(const cv::Mat &inputImage, int dilation_size) {
+    cv::Mat dilatedImage;
+    // create a structuring element
+    cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * dilation_size + 1, 2 * dilation_size + 1), cv::Point(dilation_size, dilation_size));
+    
+    cv::dilate(inputImage, dilatedImage, element);
+    return dilatedImage;
+}
+
+cv::Mat ImageProcessor::applyEroded(const cv::Mat &inputImage, int erosion_size) {
+    cv::Mat erodedImage;
+    cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1), cv::Point(erosion_size, erosion_size));
+
+    cv::erode(inputImage, erodedImage, element);
+    return erodedImage;
 }

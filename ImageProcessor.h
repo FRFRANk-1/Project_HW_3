@@ -13,6 +13,10 @@ public:
 
     // Apply thresholding to the input image
     cv::Mat applyCustomThreshold(const cv::Mat &inputImage, int thresholdValue, int maxVal);
+
+    cv::Mat applyDilated(const cv::Mat &inputImage, int dilation_size);
+
+    cv::Mat applyEroded(const cv::Mat &inputImage, int erosion_size);
 };
 
 #endif // IMAGEPROCESSOR_H
