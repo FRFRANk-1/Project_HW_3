@@ -1,0 +1,5 @@
+To setup cmake in vscode:
+
+step1: ctrl+shift+p ( last one - amd64)
+step2: Cmake quickstart : ("project name")
+step3: choose c++  ->  "main.cpp"  -> executable

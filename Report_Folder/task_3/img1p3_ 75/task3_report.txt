@@ -1,0 +1,7 @@
+Connected Components Report
+
+Component 1:
+ - Area: 270302
+ - Bounding Box: x=0, y=0, width=641, height=517
+ - Centroid: x=275, y=238
+

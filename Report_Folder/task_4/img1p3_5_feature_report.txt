@@ -1,0 +1,8 @@
+computed features - task 4
+
+Component 1:
+ - Area: 270302
+ - Percent Filled: 81.5644%
+ - Aspect Ratio: 1.23985
+ - Hu Moments: [0.175102, 0.00156984, 0.000489279, 2.54974e-05, 2.11671e-09, 9.81963e-07, 1.90524e-09]
+
