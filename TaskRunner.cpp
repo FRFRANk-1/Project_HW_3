@@ -211,15 +211,20 @@ void TaskRunner::runTask5(const std::string& imagePath, int minSize) {
     cv::Mat processedImage;
 
     // Assume you have a method to process the frame and extract features
-    std::vector<double> features = processor.extractFeatures(frame, minSize);
+    std::vector<double> features = processor.extractFeatures(frame, processedImage, minSize);
 
     // Save features and label to the file
     std::string filename = "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_5/objectDB.txt"; // The file where the object database is stored
     processor.saveFeatureVector(features, label, filename);
 
-    cv::Mat binaryImage = processor.applyCustomThreshold(frame, 128, 255);
-    cv::namedWindow("Binary Image", cv::WINDOW_AUTOSIZE);
-    cv::imshow("Binary Image", binaryImage);
+    // Display the processed image
+    cv::namedWindow("processed Image", cv::WINDOW_AUTOSIZE);
+    cv::imshow("processed Image", processedImage);
+    
+    // Save the processed image
+    std::string imagePathToSave = "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_5/processedImage.jpg";
+    cv::imwrite(imagePathToSave, processedImage);
+    
     cv::waitKey(0); 
 
     std::cout << "Saved features for label: " << label << std::endl;

@@ -25,7 +25,7 @@ public:
     
     void ImageProcessor::saveFeatureVector(const std::vector<double>& features, const std::string& label, const std::string& filename);
 
-    std::vector<double> ImageProcessor::extractFeatures(const cv::Mat &inputImage, int minSize);
+    std::vector<double> ImageProcessor::extractFeatures(const cv::Mat &inputImage, cv::Mat& processedImage, int minSize);
 };  
     
 #endif // IMAGEPROCESSOR_H

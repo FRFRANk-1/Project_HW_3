@@ -152,7 +152,7 @@ void ImageProcessor::saveFeatureVector(const std::vector<double>& features, cons
     file.close();
 }
 
-std::vector<double> ImageProcessor::extractFeatures(const cv::Mat &inputImage, int minSize) {
+std::vector<double> ImageProcessor::extractFeatures(const cv::Mat &inputImage, cv::Mat& processedImage, int minSize) {
     
     std::vector<double> features;
 
@@ -169,18 +169,18 @@ std::vector<double> ImageProcessor::extractFeatures(const cv::Mat &inputImage, i
     // std::cout << "Red channel: " << std::endl << channels[2] << std::endl;
 
         std:: cout << "Converting to grayscale" << std::endl;
-        cv::cvtColor(inputImage, grayImage, cv::COLOR_BGR2GRAY);
+        cv::cvtColor(inputImage, processedImage, cv::COLOR_BGR2GRAY);
     } else {
-        grayImage = inputImage.clone();
+        processedImage = inputImage.clone();
     }
 
     // apply thresholding
     cv::Mat binaryImage;
-    cv::threshold(grayImage, binaryImage, 128, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
+    cv::threshold(processedImage, processedImage, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
 
     // find connected components stats
     cv::Mat labels, stats, centroids;
-    int nLabels = cv::connectedComponentsWithStats(binaryImage, labels, stats, centroids, 8, CV_32S);
+    int nLabels = cv::connectedComponentsWithStats(processedImage, labels, stats, centroids, 8, CV_32S);
 
     for (int label = 1; label < nLabels; ++label) {
         int area = stats.at<int>(label, cv::CC_STAT_AREA);
