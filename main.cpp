@@ -9,6 +9,7 @@ int main(int argc, char** argv) {
         std::cerr << "For Task 2: [image_path] [dilation_size] [erosion_size]" << std::endl;
         std::cerr << "For Task 3: [image_path] [min_size]" << std::endl;
         std::cerr << "For Task 4: [image_path] [min_size]" << std::endl;
+        std::cerr << "For Task 5: [image_path] [min_size]" << std::endl;
         return -1;
     }
 
@@ -60,6 +61,15 @@ int main(int argc, char** argv) {
                 runner.runTask4(imagePath, minSize);
             }
             break;
+        case 5:
+            if (argc != 4) {
+                std::cerr << "Usage for Task 5: " << argv[0] << " 5 <image_path>" << std::endl;
+                return -1;
+            }
+            {   
+                int minSize = std::stoi(argv[3]);
+                runner.runTask5(imagePath, minSize);
+            }
         default:
             std::cerr << "Error: Unknown task number." << std::endl;
             return -1;

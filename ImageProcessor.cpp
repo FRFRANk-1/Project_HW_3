@@ -4,6 +4,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <fstream>
+#include <vector>
+#include <string>
 
 // Constructor
 ImageProcessor::ImageProcessor() { }
@@ -131,3 +133,75 @@ double ImageProcessor::calculateAspectRatio(const cv::Mat &stats, int label) {
     return static_cast<double>(bboxwidth) / bboxheight;
 }
 
+void ImageProcessor::saveFeatureVector(const std::vector<double>& features, const std::string& label, const std::string& filename) {
+    std::ofstream file;
+    file.open(filename, std::ios_base::app);
+    file << "Label: " << label << "\n";
+
+    // Define variable names for each feature
+    std::vector<std::string> variableNames = {
+        "Area", "PercentFilled", "AspectRatio", 
+        "HuMoment1", "HuMoment2", "HuMoment3", "HuMoment4", "HuMoment5", "HuMoment6", "HuMoment7"
+    };
+
+    // Write features with variable names to the file
+    for (size_t i = 0; i < features.size(); ++i) {
+        file << variableNames[i % variableNames.size()] << ": " << features[i] << "\n";
+    }
+    file << "\n";
+    file.close();
+}
+
+std::vector<double> ImageProcessor::extractFeatures(const cv::Mat &inputImage, int minSize) {
+    
+    std::vector<double> features;
+
+    // convert to grayscale if the input image is colored
+    cv::Mat grayImage;
+    if(inputImage.channels() == 3) {
+    std:: cout << "Input image has 3 channels:" << std::endl;
+    
+    std::vector<cv::Mat> channels;
+    cv::split(inputImage, channels);
+
+    // std::cout << "Blue channel: " << std::endl << channels[0] << std::endl;
+    // std::cout << "Green channel: " << std::endl << channels[1] << std::endl;
+    // std::cout << "Red channel: " << std::endl << channels[2] << std::endl;
+
+        std:: cout << "Converting to grayscale" << std::endl;
+        cv::cvtColor(inputImage, grayImage, cv::COLOR_BGR2GRAY);
+    } else {
+        grayImage = inputImage.clone();
+    }
+
+    // apply thresholding
+    cv::Mat binaryImage;
+    cv::threshold(grayImage, binaryImage, 128, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
+
+    // find connected components stats
+    cv::Mat labels, stats, centroids;
+    int nLabels = cv::connectedComponentsWithStats(binaryImage, labels, stats, centroids, 8, CV_32S);
+
+    for (int label = 1; label < nLabels; ++label) {
+        int area = stats.at<int>(label, cv::CC_STAT_AREA);
+
+        // skip small components if it area is less than minSize
+        if (area < minSize) {
+            // apply previous defined function to here
+            double aspectRatio = calculateAspectRatio(stats, label);
+            double percentFilled = calculatePercentFilled(stats, label);
+
+            cv::Moments mu = cv::moments(cv::Mat(labels == label), true);
+            double huMoments[7];
+            cv::HuMoments(mu, huMoments);
+
+            features.push_back(area);
+            features.push_back(percentFilled);
+            features.push_back(aspectRatio);
+            for (int i = 0; i < 7; ++i) {
+                features.push_back(huMoments[i]);
+            }
+        }
+    }
+    return features;
+}
