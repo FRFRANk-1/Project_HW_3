@@ -5,8 +5,9 @@
 int main(int argc, char** argv) {
     if (argc < 3) {
         std::cerr << "Usage: " << argv[0] << " <task_number> <image_path> [additional_parameters]" << std::endl;
-        std::cerr << "For Task 1: [kernel_size] [threshold_value] [max_val]" << std::endl;
-        std::cerr << "For Task 2: [dilation_size] [erosion_size]" << std::endl;
+        std::cerr << "For Task 1: [image_path] [kernel_size] [threshold_value] [max_val]" << std::endl;
+        std::cerr << "For Task 2: [image_path] [dilation_size] [erosion_size]" << std::endl;
+        std::cerr << "For Task 3: [image_path] [min_size]" << std::endl;
         return -1;
     }
 
@@ -38,7 +39,16 @@ int main(int argc, char** argv) {
                 runner.runTask2(imagePath, dilationSize, erosionSize);
             }
             break;
-        // Add cases for other tasks as needed
+        case 3:
+            if (argc != 4) {
+                std::cerr << "Usage for Task 3: " << argv[0] << " 3 <image_path> <min_size>" << std::endl;
+                return -1;
+            }
+            {
+                int minSize = std::stoi(argv[3]);
+                runner.runTask3(imagePath, minSize);
+            }
+            break;
         default:
             std::cerr << "Error: Unknown task number." << std::endl;
             return -1;

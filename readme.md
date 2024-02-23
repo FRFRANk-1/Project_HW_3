@@ -31,3 +31,20 @@ Selection_1: .\Project_HW_3 2 "D:/NEU study file/5330/Project_HW_3/Report_Folder
 selection_2: .\Project_HW_3 2 "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_1/img2p3_15,100,255,5/thresholded.jpg" 3 2
  
 selection_3: .\Project_HW_3 2 "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_1/img5p3_15,100,255,5/thresholded.jpg" 3 2
+
+## To run task 3:
+<image_path> <min_size>
+
+Observation 1: With the larger min_size value input, the graph sementation get region would become less effective since the area size defined become large. currently with optimal value is 75 where the image results is good enough to detect small segment region but good enough not overdone losing detection of big region. 
+
+Observation 2: 
+
+There are basically two color phrase in the results image.
+
+First, black color region does not being identified as components by the algorithm since they are smaller than the min_size threshold(75).
+
+Second, blue color region is considered largest connected components that being identified since which is greater than the min_size threshold(75)
+ 
+Last, other random color have been assigned to be considered as other connected components.
+
+terminal input examples -> .\Project_HW_3 3 "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_1/img2p3_15,100,255,5/thresholded.jpg" 75

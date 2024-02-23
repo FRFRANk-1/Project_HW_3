@@ -83,3 +83,41 @@ void TaskRunner::runTask2(const std::string& imagePath, int dilation_size, int e
     // Wait indefinitely until a key is pressed
     cv::waitKey(0);
 }
+
+void TaskRunner::runTask3(const std::string& imagePath, int minSize) {
+    cv::Mat frame = cv::imread(imagePath, cv::IMREAD_GRAYSCALE); // Ensure image is in grayscale
+
+    // std :: cout << "debug_3 inputImage: " << imagePath << std::endl;
+
+    if (frame.empty()) {
+        std::cerr << "Error: Image could not be loaded from " << imagePath << std::endl;
+        return;
+    }
+    
+    ImageProcessor processor;
+
+    // Display the resulting frame
+    cv::namedWindow("Thresholded", cv::WINDOW_AUTOSIZE);
+    cv::namedWindow("Connected Components", cv::WINDOW_AUTOSIZE);
+
+    cv::Mat thresholded;
+    processor.applyCustomThreshold(frame, 128, 255); 
+    thresholded = processor.applyCustomThreshold(frame, 128, 255);
+
+    cv::Mat labeledImage;
+    processor.findConnectedComponents(thresholded, labeledImage, minSize);
+
+    std :: cout << "debug_4 inputImage: " << imagePath << std::endl;
+
+    cv::imshow("Thresholded", thresholded);
+    cv::imshow("Connected Components", labeledImage);
+
+    std::string outputDir = "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_3/";
+
+    cv::imwrite(outputDir + "thresholded.jpg", thresholded);
+    cv::imwrite(outputDir + "connected_components.jpg", labeledImage);
+    
+    // std :: cout << "debug_5 inputImage: " << imagePath << std::endl;
+   
+    cv::waitKey(0);
+}
