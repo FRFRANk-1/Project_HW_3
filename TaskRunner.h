@@ -14,6 +14,8 @@ public:
     void runTask4(const std::string& imagePath, int minSize);
 
     void runTask5(const std::string& imagePath, int minSize);
+
+    void runTask6(const std::string& imagePath, int minSize);
 };
 
 #endif // TASKRUNNER_H

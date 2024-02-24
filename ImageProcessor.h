@@ -2,6 +2,11 @@
 #define ImageProcessor_H
 
 #include <opencv2/core/mat.hpp>
+#include <map>
+#include <vector>
+#include <string>
+
+std::string classifyObject(const std::vector<double>& features, const std::string& databasePath);
 
 class ImageProcessor {
 public:
@@ -25,7 +30,18 @@ public:
     
     void ImageProcessor::saveFeatureVector(const std::vector<double>& features, const std::string& label, const std::string& filename);
 
+    size_t ImageProcessor::determineFeatureVectorSize(const std::string& databasePath);
+
     std::vector<double> ImageProcessor::extractFeatures(const cv::Mat &inputImage, cv::Mat& processedImage, int minSize);
+
+    std::map<std::string, std::vector<double>> loadDatabase(const std::string& filename);
+
+    std::vector<double> computeFeatureStdevs(const std::map<std::string, std::vector<double>>& database);
+
+    std::string ImageProcessor::classifyFeatureVector(const std::vector<double>& featureVector, const std::map<std::string, std::vector<double>>& database);
+
+    double scaledEuclideanDistance(const std::vector<double>& vec1, const std::vector<double>& vec2, const std::vector<double>& stdevs);
+
 };  
     
 #endif // IMAGEPROCESSOR_H

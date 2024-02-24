@@ -1,0 +1,13 @@
+Classification Process for: D:/NEU study file/5330/Project_HW_3/Report_Folder/task_2/img1p3_ 1 2/dilated_eroded.jpg
+Feature vector size: 150
+Best match: Unknown with a distance of 1.79769e+308
+
+Classification Process for: D:/NEU study file/5330/Project_HW_3/Proj03Examples/img4p3.png
+Feature vector size: 150
+Best match: Unknown with a distance of 1.79769e+308
+
+Classification Process for: D:/NEU study file/5330/Project_HW_3/Proj03Examples/img1p3.png
+Feature vector size: 150
+Best match: Unknown with a distance of 1.79769e+308
+
+

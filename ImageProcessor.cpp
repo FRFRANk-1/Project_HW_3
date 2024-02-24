@@ -152,42 +152,60 @@ void ImageProcessor::saveFeatureVector(const std::vector<double>& features, cons
     file.close();
 }
 
+size_t ImageProcessor::determineFeatureVectorSize(const std::string& databasePath) {
+    std::ifstream file(databasePath);
+    std::string line;
+    size_t maxSize = 0;
+    size_t currentSize = 0;
+
+    // Read the file line by line
+    while (std::getline(file, line)) {
+        // Check for the 'Label:' identifier to reset the current size count
+        if (line.rfind("Label:", 0) == 0) {
+            maxSize = std::max(maxSize, currentSize);
+            currentSize = 0;
+        } else if (!line.empty()) {
+            // Increment for each feature line that is not a label
+            currentSize++;
+        }
+    }
+    // Check last vector size
+    maxSize = std::max(maxSize, currentSize);
+    
+    file.close();
+    return maxSize;
+}
+
 std::vector<double> ImageProcessor::extractFeatures(const cv::Mat &inputImage, cv::Mat& processedImage, int minSize) {
     
     std::vector<double> features;
-
-    // convert to grayscale if the input image is colored
-    cv::Mat grayImage;
-    if(inputImage.channels() == 3) {
-    std:: cout << "Input image has 3 channels:" << std::endl;
     
-    std::vector<cv::Mat> channels;
-    cv::split(inputImage, channels);
+    size_t expectedSize = determineFeatureVectorSize("D:/NEU study file/5330/Project_HW_3/Report_Folder/task_5/objectDB.txt");
+    if (features.size() < expectedSize) {
+        features.insert(features.end(), expectedSize - features.size(), 0.0);
+    }
+    return features;
 
-    // std::cout << "Blue channel: " << std::endl << channels[0] << std::endl;
-    // std::cout << "Green channel: " << std::endl << channels[1] << std::endl;
-    // std::cout << "Red channel: " << std::endl << channels[2] << std::endl;
-
-        std:: cout << "Converting to grayscale" << std::endl;
+    // Convert to grayscale if the input image is colored
+    if (inputImage.channels() == 3) {
+        std::cout << "Input image has 3 channels. Converting to grayscale." << std::endl;
         cv::cvtColor(inputImage, processedImage, cv::COLOR_BGR2GRAY);
     } else {
         processedImage = inputImage.clone();
     }
 
-    // apply thresholding
-    cv::Mat binaryImage;
+    // Apply thresholding
     cv::threshold(processedImage, processedImage, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
 
-    // find connected components stats
+    // Find connected components and stats
     cv::Mat labels, stats, centroids;
     int nLabels = cv::connectedComponentsWithStats(processedImage, labels, stats, centroids, 8, CV_32S);
 
     for (int label = 1; label < nLabels; ++label) {
         int area = stats.at<int>(label, cv::CC_STAT_AREA);
 
-        // skip small components if it area is less than minSize
-        if (area < minSize) {
-            // apply previous defined function to here
+        // Skip small components if the area is less than minSize
+        if (area >= minSize) {
             double aspectRatio = calculateAspectRatio(stats, label);
             double percentFilled = calculatePercentFilled(stats, label);
 
@@ -195,6 +213,7 @@ std::vector<double> ImageProcessor::extractFeatures(const cv::Mat &inputImage, c
             double huMoments[7];
             cv::HuMoments(mu, huMoments);
 
+            // Add the component's features to the vector
             features.push_back(area);
             features.push_back(percentFilled);
             features.push_back(aspectRatio);
@@ -203,5 +222,134 @@ std::vector<double> ImageProcessor::extractFeatures(const cv::Mat &inputImage, c
             }
         }
     }
-    return features;
+}
+
+std::string classifyObject(const std::vector<double>& features, const std::string& databasePath) {
+    
+    std:: cout << "Classifying object start" << std::endl;
+    ImageProcessor processor;
+
+    auto database = processor.loadDatabase(databasePath);
+
+    std::string bestMatchLabel;
+    double shortestDistance = std::numeric_limits<double>::max();
+
+    for (const auto& entry : database) {
+        double distance = processor.scaledEuclideanDistance(features, entry.second, processor.computeFeatureStdevs(database));
+        if (distance < shortestDistance) {
+            shortestDistance = distance;
+            bestMatchLabel = entry.first;
+        }
+    }
+    return bestMatchLabel;
+}
+
+std::vector<double> ImageProcessor::computeFeatureStdevs(const std::map<std::string, std::vector<double>>& database) {
+    if (database.empty()) return {};
+    size_t featureCount = database.begin()->second.size();
+    std::vector<double> means(featureCount, 0), stdevs(featureCount, 0);
+
+    // Calculate means
+    for (const auto& entry : database) {
+        for (size_t i = 0; i < featureCount; ++i) {
+            means[i] += entry.second[i];
+        }
+    }
+    for (double& mean : means) mean /= database.size();
+
+    // Calculate standard deviations
+    for (const auto& entry : database) {
+        for (size_t i = 0; i < featureCount; ++i) {
+            stdevs[i] += std::pow(entry.second[i] - means[i], 2);
+        }
+    }
+    for (double& stdev : stdevs) stdev = std::sqrt(stdev / database.size());
+
+    return stdevs;
+}
+
+std::map<std::string, std::vector<double>> ImageProcessor::loadDatabase(const std::string& filename) {
+    std::map<std::string, std::vector<double>> database;
+    std::ifstream file(filename);
+    std::string line, label;
+    std::vector<double> featureVector;
+    // const size_t EXPECTED_FEATURE_VECTOR_SIZE;
+    
+    while (std::getline(file, line)) {
+        std::stringstream ss(line);
+        if (line.rfind("Label:", 0) == 0) { // New label found
+            if (!label.empty() && featureVector.size()) {
+                // Log error or handle the situation when feature vector size is not as expected
+                std::cerr << "Error: Feature vector for label " << label << " has " << featureVector.size() << " features " << std::endl;
+            }
+            label = line.substr(7); // Extract label name
+            featureVector.clear(); // Prepare for next feature vector
+        } else { // Assuming line contains feature value
+            double value;
+            if (ss >> value) {
+                featureVector.push_back(value);
+            }
+        }
+    }
+    return database;
+}
+
+
+std::string ImageProcessor::classifyFeatureVector(const std::vector<double>& featureVector, const std::map<std::string, std::vector<double>>& database) {
+    std::string filename = "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_6/data_analyzation.txt";
+    std::ofstream report(filename);
+
+    if(!report.is_open()) {
+        std::cerr << "Error: Unable to open file for writing." << std::endl;
+        return "";
+    }
+    
+    std::string bestMatch;
+    double bestDistance = std::numeric_limits<double>::max();
+    
+    report << "Feature vector size: " << featureVector.size() << std::endl;
+    report << "Starting classification process." << std::endl;
+    report << "Loaded database size: " << database.size() << std::endl;
+    
+    // Print the size of the feature vector to be classified
+    std::cout << "Feature vector size: " << featureVector.size() << std::endl;
+    std::cout << "Starting classification process." << std::endl;
+    std::cout << "Loaded database size: " << database.size() << std::endl;
+    std::cout << "Feature vector to classify size: " << featureVector.size() << std::endl;
+
+    for (const auto& entry : database) {
+        // Ensure vectors are the same size before calculating distance
+        std::cout << "Checking entry: " << entry.first << " with vector size " << entry.second.size() << std::endl;
+        if (featureVector.size() == entry.second.size()) {
+            double distance = scaledEuclideanDistance(featureVector, entry.second, computeFeatureStdevs(database));
+            // Print the comparison distance for each database entry
+            std::cout << "Distance to label " << entry.first << ": " << distance << std::endl;
+
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                bestMatch = entry.first;
+            }
+        } else {
+            std::cout << "Size mismatch for label " << entry.first << ": feature vector size = " << featureVector.size() << ", database vector size = " << entry.second.size() << std::endl;
+        }
+    }
+
+    // Print the best match after comparing with all entries
+    if (!bestMatch.empty()) {
+        std::cout << "Best match: " << bestMatch << " with a distance of " << bestDistance << std::endl;
+    } else {
+        std::cerr << "No suitable match found." << std::endl;
+    }
+
+    return bestMatch;
+}
+
+double ImageProcessor::scaledEuclideanDistance(const std::vector<double>& vec1, const std::vector<double>& vec2, const std::vector<double>& stdevs) {
+    double distance = 0.0;
+    for (size_t i = 0; i < vec1.size(); ++i) {
+        double diff = vec1[i] - vec2[i];
+        double scaledDiff = stdevs[i] > 0 ? diff / stdevs[i] : diff; // Avoid division by zero
+        distance += scaledDiff * scaledDiff;
+    }
+    return std::sqrt(distance);
 }
