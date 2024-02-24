@@ -87,3 +87,10 @@ terminal input examples ->
 .\Project_HW_3 6 "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_2/img1p3_ 1 2/dilated_eroded.jpg" 10
 
 .\Project_HW_3 6 "D:/NEU study file/5330/Project_HW_3/Proj03Examples/img4p3.png" 10
+
+## To run task 7:
+
+
+## To run task 8:
+
+## To run task 9:

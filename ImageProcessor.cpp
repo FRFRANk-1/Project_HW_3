@@ -180,12 +180,11 @@ std::vector<double> ImageProcessor::extractFeatures(const cv::Mat &inputImage, c
     
     std::vector<double> features;
     
-    size_t expectedSize = determineFeatureVectorSize("D:/NEU study file/5330/Project_HW_3/Report_Folder/task_5/objectDB.txt");
-    if (features.size() < expectedSize) {
-        features.insert(features.end(), expectedSize - features.size(), 0.0);
-    }
-    return features;
-
+    // size_t expectedSize = determineFeatureVectorSize("D:/NEU study file/5330/Project_HW_3/Report_Folder/task_5/objectDB.txt");
+    // if (features.size() < expectedSize) {
+    //     features.insert(features.end(), expectedSize - features.size(), 0.0);
+    // }
+    
     // Convert to grayscale if the input image is colored
     if (inputImage.channels() == 3) {
         std::cout << "Input image has 3 channels. Converting to grayscale." << std::endl;
@@ -194,7 +193,7 @@ std::vector<double> ImageProcessor::extractFeatures(const cv::Mat &inputImage, c
         processedImage = inputImage.clone();
     }
 
-    // Apply thresholding
+    // Apply thresholding or not (currently set at 0)
     cv::threshold(processedImage, processedImage, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
 
     // Find connected components and stats
@@ -221,7 +220,9 @@ std::vector<double> ImageProcessor::extractFeatures(const cv::Mat &inputImage, c
                 features.push_back(huMoments[i]);
             }
         }
-    }
+    } 
+    std:: cout << "Feature extraction complete" << std::endl; 
+    return features;
 }
 
 std::string classifyObject(const std::vector<double>& features, const std::string& databasePath) {
@@ -241,14 +242,18 @@ std::string classifyObject(const std::vector<double>& features, const std::strin
             bestMatchLabel = entry.first;
         }
     }
+    std::cout << "Classifying object complete" << std::endl;
     return bestMatchLabel;
 }
 
 std::vector<double> ImageProcessor::computeFeatureStdevs(const std::map<std::string, std::vector<double>>& database) {
+    
+    std::cout << "Computing feature standard deviations" << std::endl;
     if (database.empty()) return {};
     size_t featureCount = database.begin()->second.size();
     std::vector<double> means(featureCount, 0), stdevs(featureCount, 0);
 
+    std::cout << "Feature count start: " << featureCount << std::endl;
     // Calculate means
     for (const auto& entry : database) {
         for (size_t i = 0; i < featureCount; ++i) {
@@ -257,6 +262,7 @@ std::vector<double> ImageProcessor::computeFeatureStdevs(const std::map<std::str
     }
     for (double& mean : means) mean /= database.size();
 
+    std::cout << "Means calculated start" << std::endl;
     // Calculate standard deviations
     for (const auto& entry : database) {
         for (size_t i = 0; i < featureCount; ++i) {
@@ -265,16 +271,24 @@ std::vector<double> ImageProcessor::computeFeatureStdevs(const std::map<std::str
     }
     for (double& stdev : stdevs) stdev = std::sqrt(stdev / database.size());
 
+    std::cout << "Standard deviations calculated" << std::endl;
+    for (const auto& stdev : stdevs ) {
+        std::cout << stdev << " ";
+    }
     return stdevs;
 }
 
 std::map<std::string, std::vector<double>> ImageProcessor::loadDatabase(const std::string& filename) {
+   
+    std:: cout << "Loading database start" << std::endl;
+
     std::map<std::string, std::vector<double>> database;
     std::ifstream file(filename);
     std::string line, label;
     std::vector<double> featureVector;
     // const size_t EXPECTED_FEATURE_VECTOR_SIZE;
     
+
     while (std::getline(file, line)) {
         std::stringstream ss(line);
         if (line.rfind("Label:", 0) == 0) { // New label found
@@ -291,11 +305,18 @@ std::map<std::string, std::vector<double>> ImageProcessor::loadDatabase(const st
             }
         }
     }
+    std:: cout << "Loading database complete" << std::endl;
     return database;
 }
 
+double ImageProcessor::getBestDistance() const {
+    return lastBestDistance;
+}
 
 std::string ImageProcessor::classifyFeatureVector(const std::vector<double>& featureVector, const std::map<std::string, std::vector<double>>& database) {
+    
+    std::cout << "Classifying feature vector" << std::endl;
+
     std::string filename = "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_6/data_analyzation.txt";
     std::ofstream report(filename);
 
@@ -306,10 +327,6 @@ std::string ImageProcessor::classifyFeatureVector(const std::vector<double>& fea
     
     std::string bestMatch;
     double bestDistance = std::numeric_limits<double>::max();
-    
-    report << "Feature vector size: " << featureVector.size() << std::endl;
-    report << "Starting classification process." << std::endl;
-    report << "Loaded database size: " << database.size() << std::endl;
     
     // Print the size of the feature vector to be classified
     std::cout << "Feature vector size: " << featureVector.size() << std::endl;
@@ -328,12 +345,15 @@ std::string ImageProcessor::classifyFeatureVector(const std::vector<double>& fea
             if (distance < bestDistance) {
                 bestDistance = distance;
                 bestMatch = entry.first;
+                lastBestDistance = bestDistance;
             }
         } else {
             std::cout << "Size mismatch for label " << entry.first << ": feature vector size = " << featureVector.size() << ", database vector size = " << entry.second.size() << std::endl;
         }
+        return bestMatch;
     }
 
+    
     // Print the best match after comparing with all entries
     if (!bestMatch.empty()) {
         std::cout << "Best match: " << bestMatch << " with a distance of " << bestDistance << std::endl;
@@ -347,9 +367,10 @@ std::string ImageProcessor::classifyFeatureVector(const std::vector<double>& fea
 double ImageProcessor::scaledEuclideanDistance(const std::vector<double>& vec1, const std::vector<double>& vec2, const std::vector<double>& stdevs) {
     double distance = 0.0;
     for (size_t i = 0; i < vec1.size(); ++i) {
-        double diff = vec1[i] - vec2[i];
-        double scaledDiff = stdevs[i] > 0 ? diff / stdevs[i] : diff; // Avoid division by zero
+        double scaledDiff = (stdevs[i] > 0) ? (vec1[i] - vec2[i]) / stdevs[i] : (vec1[i] - vec2[i]) / (stdevs[i] + std::numeric_limits<double>::epsilon());
         distance += scaledDiff * scaledDiff;
     }
+    std:: cout << "Scaled Euclidean distance: " << std::sqrt(distance) << std::endl;
     return std::sqrt(distance);
 }
+

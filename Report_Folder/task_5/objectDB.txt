@@ -10,8 +10,6 @@ HuMoment5: 0
 HuMoment6: 0
 HuMoment7: 0
 
-Label: Project_HW_3/Report_Folder/task_2/img2p3
-
 Label: Project_HW_3/Report_Folder/task_2/img5p3
 Area: 3
 PercentFilled: 100

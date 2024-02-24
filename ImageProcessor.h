@@ -42,6 +42,11 @@ public:
 
     double scaledEuclideanDistance(const std::vector<double>& vec1, const std::vector<double>& vec2, const std::vector<double>& stdevs);
 
+    double getBestDistance() const;
+
+private:
+    double lastBestDistance = std::numeric_limits<double>::max();
 };  
+
     
 #endif // IMAGEPROCESSOR_H

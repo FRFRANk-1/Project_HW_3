@@ -233,62 +233,67 @@ void TaskRunner::runTask5(const std::string& imagePath, int minSize) {
 void TaskRunner::runTask6(const std::string& imagePath, int minSize) {
     cv::Mat frame = cv::imread(imagePath, cv::IMREAD_COLOR);
     if (frame.empty()) {
-        std::cerr << "Error: Image could not be loaded." << std::endl;
+        std::cerr << "Error: Image could not be loaded.\n";
         return;
     }
 
     ImageProcessor processor;
     cv::Mat processedImage;
-    
-    // Extract features from the image
     std::vector<double> features = processor.extractFeatures(frame, processedImage, minSize);
+    auto database = processor.loadDatabase("D:/NEU study file/5330/Project_HW_3/Report_Folder/task_5/objectDB.txt");
 
-    // Load the object database
-    std::string databasePath = "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_5/objectDB.txt";
-    auto database = processor.loadDatabase(databasePath);
+    std::string bestMatch = processor.classifyFeatureVector(features, database);
+    double bestDistance = processor.getBestDistance(); 
+
+    const double thresholdForUnknown = 0.5; 
+    if (bestDistance > thresholdForUnknown) {
+        bestMatch = "Unknown";
+    }
 
     std::string filename = "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_6/data_analyzation.txt";
     std::ofstream report(filename, std::ios::out | std::ios::app); 
-
     if (!report.is_open()) {
-        std::cerr << "Error: Unable to open file for writing comparison results." << std::endl;
+        std::cerr << "Error: Unable to open file for writing comparison results.\n";
         return;
-    }
-
-    report << "\nClassification Process for: " << imagePath << std::endl;
-    report << "Feature vector size: " << features.size() << std::endl;
-
-    std::string bestMatch;
-    double bestDistance = std::numeric_limits<double>::max();
-
-    double threshold = 100;
-    if (bestDistance > threshold) {
-        bestMatch = "Unknown";
-    }
-    
-    for (const auto& entry : database) {
-        std::vector<double> stdevs = processor.computeFeatureStdevs(database);
-        double distance = processor.scaledEuclideanDistance(features, entry.second, stdevs);
-        report << "Comparing with label " << entry.first << ", Distance: " << distance << std::endl;
-        
-        if (distance < bestDistance) {
-            bestDistance = distance;
-            bestMatch = entry.first;
-        }
-    }
-
-    if (!bestMatch.empty()) {
-        report << "Best match: " << bestMatch << " with a distance of " << bestDistance << std::endl;
     } else {
-        report << "No suitable match found." << std::endl;
+        std::cout << "File opened successfully.\n";
     }
 
+    report << "Classification Process for: " << imagePath << std::endl;
+    report << "Feature vector size: " << features.size() << std::endl;
+    report << "Best match: " << bestMatch << " with a distance of " << bestDistance << std::endl << std::endl;
     report.close();
 
-    // Overlay the label on the image
-    cv::putText(frame, bestMatch, cv::Point(10, frame.rows - 10), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0), 2);
-
-    // Display the classified image
+    // display the best match and distance on the image being shown
+    cv::putText(frame, bestMatch + " Distance: " + std::to_string(bestDistance), cv::Point(10, frame.rows - 10), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0), 2);
     cv::imshow("Classification", frame);
     cv::waitKey(0);
 }
+
+// void TaskRunner::runTask7(const std::vector<std::pair<std::string, std::string>>& imageData, const std::string& databasePath) {
+//     ImageProcessor processor;
+//     std::map<std::string, int> labelToIndex;
+//     std::vector<std::vector<int>> confusionMatrix(5, std::vector<int>(5,0));
+
+//     for (const auto& data : imageData) {
+//         cv::Mat frame = cv::imread(data.first, cv::IMREAD_COLOR);
+//         if (frame.empty()) {
+//             std::cerr << "Error: Image could not be loaded from " << data.first << std::endl;
+//             continue;
+//         }
+//         std::vector<double> features = processor.extractFeatures(frame, frame, /*minSize=*/10); // Adjust minSize as needed
+//         std::string classifiedLabel = processor.classifyFeatureVector(features, processor.loadDatabase(databasePath));
+        
+//         int trueIndex = labelToIndex[data.second]; // Map the true label to an index
+//         int classifiedIndex = labelToIndex[classifiedLabel]; // Map the classified label to an index
+//         confusionMatrix[trueIndex][classifiedIndex] += 1;
+//     }
+
+//     // Print or save the confusion matrix for reporting
+//     for (const auto& row : confusionMatrix) {
+//         for (int val : row) {
+//             std::cout << val << " ";
+//         }
+//         std::cout << std::endl;
+//     }
+// }

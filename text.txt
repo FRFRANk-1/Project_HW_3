@@ -1,46 +1,38 @@
-This project entails creating a 2D object recognition system with the capability to recognize, categorize, and track objects in real-time or through processed image sequences. Here’s a structured approach to tackle this project, starting from setting up your development environment to implementing each functionality step by step:
+To analyze your code and understand why you're only getting "best match: unknown" with a large distance, we need to consider several points:
 
-Project Setup and Structure
-Development Environment Setup:
+Feature Vector Extraction:
+The extractFeatures function should correctly extract the desired number of features from the input image. However, it seems the function is returning a feature vector filled with zeros, which could be a reason for not finding a match.
 
-Ensure OpenCV is properly installed and configured in Visual Studio Code (VSCode) for C++ development.
-If you plan to switch from MinGW to MSVC (Microsoft Visual C++ compiler), make sure you have the Visual Studio 2019 Build Tools installed.
-Project Structure:
+Database Loading:
+The loadDatabase function should correctly load the database from the specified file path. There might be an issue if the file is not found, the format is incorrect, or the feature vectors in the database are not valid.
 
-Main.cpp: Entry point of your program that orchestrates the flow of data through different modules (tasks).
-ImageProcessor.h/cpp: For pre-processing tasks like thresholding and morphological operations.
-Segmentation.h/cpp: For connected components analysis and region segmentation.
-FeatureExtractor.h/cpp: For calculating moments, bounding boxes, and other features.
-Classifier.h/cpp: For implementing and handling the classification logic.
-ObjectDatabase.h/cpp: For managing the training data and feature vectors of known objects.
-Utility.h/cpp: For general utility functions like reading/writing data, displaying results, etc.
-Implementation Steps
-Task 1: Thresholding
-Implement Thresholding: Start by writing a function in ImageProcessor.cpp to apply a thresholding algorithm to separate objects from the background. Consider using adaptive thresholding methods that can dynamically adjust based on the image's lighting conditions.
-Display Thresholded Video: Ensure your main application loop can display the thresholded output in real-time or frame-by-frame for video sequences or single images.
-Task 2: Morphological Filtering
-Morphological Operations: Implement morphological filtering functions to clean up the binary image from thresholding. This could involve operations like erosion, dilation, opening, and closing to remove noise and fill holes.
-Choose and Apply Operations: Based on the observed noise and artifacts in your thresholded images, decide which morphological operations to apply and in what sequence.
-Task 3: Image Segmentation
-Connected Components Analysis: Implement or use OpenCV’s connected components functions to segment the cleaned image into distinct regions.
-Display Regions: Enhance your display functionality to visualize these regions with different colors or labels, ignoring regions below a size threshold.
-Task 4: Compute Features
-Feature Calculation: Write functions to compute features for each identified region. Start with basic features like the axis of least central moment and oriented bounding box. If you choose to write your own, focus on translation, scale, and rotation-invariant features.
-Display Features: Modify your display functionality to overlay these features on the output image.
-Task 5: Collect Training Data
-Training Mode: Implement a training mode in your application that allows you to label objects and store their feature vectors in a database (e.g., a simple file or a more structured database).
-Task 6: Classify New Images
-Implement Classification: Use the nearest-neighbor method initially to classify objects based on the closest matching feature vector from your training data.
-Display Classification: Show the identified label on the output image or video stream.
-Task 7: Evaluate Performance
-Testing and Confusion Matrix: Test your system with multiple images of each object in various positions and orientations. Manually record the results and construct a confusion matrix to evaluate performance.
-Task 8: System Demonstration
-Capture a Demo: Record a video demonstration of your system in action, showcasing its ability to recognize and label objects in real-time or through processed sequences.
-Task 9: Implement a Second Classification Method
-Alternative Classifier: Explore implementing a different classification approach, such as K-Nearest Neighbors or using a pre-trained deep learning model for feature extraction. Compare its performance with your initial method.
-Development Tips
-Incremental Development: Work on one task at a time and test thoroughly before moving on to the next task. This approach helps in isolating issues and ensures that each component works as expected.
-Modular Code: Keep your code modular. Writing separate classes or functions for each task makes it easier to manage and debug.
-Version Control: Use version control (e.g., Git) to manage your code. It allows you to keep track of changes and revert to previous versions if something goes wrong.
-Documentation: Document your code and your decision-making process. This will be invaluable when writing your report and for future you or others who may work on the project.
-This structured approach should guide you through completing your 2D object recognition project systematically, from setting up your development environment to implementing each component of the system.
+Distance Calculation:
+The scaledEuclideanDistance function calculates the distance between two feature vectors, taking the standard deviation into account. If the standard deviation is very small, it can lead to very large distance values. There may also be a problem if the feature vectors have different sizes, leading to incorrect distance calculations.
+
+Debugging:
+To debug the process, you need to ensure that every function is working as expected by using debugging techniques such as logging intermediate values to the console or a file.
+
+Here's a step-by-step approach to debug your code:
+
+Check the Database:
+Ensure objectDB.txt is correctly formatted and contains valid data.
+
+Debug extractFeatures Function:
+Make sure that this function is actually extracting features and not just returning a vector of zeros. You can debug this by printing the contents of the features vector before returning it from the function.
+
+Validate loadDatabase Function:
+After loading the database, print the size and contents of the loaded feature vectors to verify that they are correct.
+
+Analyze scaledEuclideanDistance:
+After computing the distance between feature vectors, print the distance values to ensure they are reasonable and not always giving a large value like 1.79769e+308.
+
+Standard Deviation Issues:
+Check the computeFeatureStdevs function to ensure that the standard deviations are not so small that they're causing the distance calculation to overflow.
+
+Console Output Not Showing:
+If std::cout statements are not displaying, it could be due to buffering. Try adding std::flush or std::endl to force the buffer to flush after each print statement. If the application is crashing before it gets to print, you may not see any output.
+
+Assertion Failure:
+The assertion failure shown in the debug window suggests a vector subscript is out of range. This could be from accessing an element in a vector that doesn't exist, such as using an incorrect index. Check where you're accessing elements in vectors and ensure you're not going out of bounds.
+
+You may need to step through the code with a debugger to inspect variables and the flow of execution at each step. This will allow you to see where the logic may be going wrong and why the expected output is not being produced.
