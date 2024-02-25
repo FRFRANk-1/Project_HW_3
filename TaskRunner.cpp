@@ -267,8 +267,38 @@ void TaskRunner::runTask6(const std::string& imagePath, int minSize) {
     // display the best match and distance on the image being shown
     cv::putText(frame, bestMatch + " Distance: " + std::to_string(bestDistance), cv::Point(10, frame.rows - 10), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0), 2);
     cv::imshow("Classification", frame);
+    std::string savePath = "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_6/classified_" + std::to_string(time(nullptr)) + ".jpg";
+    cv::imwrite(savePath, frame);
     cv::waitKey(0);
 }
+
+// void TaskRunner::runTask7(const std::vector<std::pair<std::string, std::string>>& imageData, const std::string& databasePath) {
+//     ImageProcessor processor;
+//     std::map<std::string, int> labelToIndex;
+//     std::vector<std::vector<int>> confusionMatrix(5, std::vector<int>(5,0));
+
+//     for (const auto& data : imageData) {
+//         cv::Mat frame = cv::imread(data.first, cv::IMREAD_COLOR);
+//         if (frame.empty()) {
+//             std::cerr << "Error: Image could not be loaded from " << data.first << std::endl;
+//             continue;
+//         }
+//         std::vector<double> features = processor.extractFeatures(frame, frame, /*minSize=*/10); // Adjust minSize as needed
+//         std::string classifiedLabel = processor.classifyFeatureVector(features, processor.loadDatabase(databasePath));
+        
+//         int trueIndex = labelToIndex[data.second]; // Map the true label to an index
+//         int classifiedIndex = labelToIndex[classifiedLabel]; // Map the classified label to an index
+//         confusionMatrix[trueIndex][classifiedIndex] += 1;
+//     }
+
+//     // Print or save the confusion matrix for reporting
+//     for (const auto& row : confusionMatrix) {
+//         for (int val : row) {
+//             std::cout << val << " ";
+//         }
+//         std::cout << std::endl;
+//     }
+// }
 
 // void TaskRunner::runTask7(const std::vector<std::pair<std::string, std::string>>& imageData, const std::string& databasePath) {
 //     ImageProcessor processor;
