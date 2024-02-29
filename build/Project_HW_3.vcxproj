@@ -328,6 +328,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="D:\NEU study file\5330\Project_HW_3\main.cpp" />
     <ClCompile Include="D:\NEU study file\5330\Project_HW_3\TaskRunner.cpp" />
     <ClCompile Include="D:\NEU study file\5330\Project_HW_3\ImageProcessor.cpp" />
+    <ClCompile Include="D:\NEU study file\5330\Project_HW_3\KNNClassifier.cpp" />
+    <ClCompile Include="D:\NEU study file\5330\Project_HW_3\labeler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="D:\NEU study file\5330\Project_HW_3\build\ZERO_CHECK.vcxproj">

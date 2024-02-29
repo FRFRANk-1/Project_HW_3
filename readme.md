@@ -77,10 +77,8 @@ terminal input examples ->
 Explanation: The task_5 collecting trainning data basically follow 4 major features functionalities: 1. Image Features data extraction obtainning [first: if we choose the image from the Proj03Examples which have 3 channels rgb, we convert it to grayscale first, then apply task_4 ImageProcessor::calculatePercentFilled & calcualteAspectRatio function defined eariler to formula the data for each image for further saving to the .txt file. We also choose the images that already been fliter by the previous task_2, also obtain the task_2 image features data] 2. Features saving to objectDB.txt file. 3. Task 5 implementation for display and save image to task_5 folder. 4. Combine image and dataset form into a comparsion image for data analyzation.
 
 terminal input examples ->
-.\Project_HW_3 5 "D:/NEU study file/5330/Project_HW_3/Proj03Examples/img5p3.png" 10
 
-.\Project_HW_3 5 "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_2/img2p3_ 1 2/dilated_eroded.jpg" 10
-
+.\Project_HW_3 5 "D:/NEU study file/5330/Project_HW_3/Proj03Examples" "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_5/Project_HW_3Proj03Examplesimg1p3.jpg" 10
 ## To run task 6:
 
 terminal input examples -> 
@@ -90,6 +88,10 @@ terminal input examples ->
 
 ## To run task 7:
 
+terminal input examples -> 
+.\Project_HW_3 7 "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_2/img1p3_ 1 2/dilated_eroded.jpg"
+
+.\Project_HW_3 7 "D:/NEU study file/5330/Project_HW_3/Proj03Examples/img4p3.png" 
 
 ## To run task 8:
 

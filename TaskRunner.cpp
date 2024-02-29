@@ -1,5 +1,7 @@
 #include "TaskRunner.h"
 #include "ImageProcessor.h"
+#include "KNNClassifier.h"
+#include "labeler.h"
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <fstream>
@@ -196,7 +198,11 @@ void TaskRunner::runTask4(const std::string& imagePath, int minSize) {
     cv::waitKey(0);
 }
 
-void TaskRunner::runTask5(const std::string& imagePath, int minSize) {
+void TaskRunner::runTask5(const std::string& folderPath, const std::string& imagePath, int minSize) {
+    
+    // labeler labeler(folderPath);
+    // labeler.Run();
+
     std::string label;
     std::cout << "Enter label for this object: ";
     std::cin >> label;
@@ -267,15 +273,44 @@ void TaskRunner::runTask6(const std::string& imagePath, int minSize) {
     // display the best match and distance on the image being shown
     cv::putText(frame, bestMatch + " Distance: " + std::to_string(bestDistance), cv::Point(10, frame.rows - 10), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0), 2);
     cv::imshow("Classification", frame);
-    std::string savePath = "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_6/classified_" + std::to_string(time(nullptr)) + ".jpg";
+    std::string savePath = "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_6/best_image" + std::to_string(time(nullptr)) + ".jpg";
     cv::imwrite(savePath, frame);
     cv::waitKey(0);
 }
 
-// void TaskRunner::runTask7(const std::vector<std::pair<std::string, std::string>>& imageData, const std::string& databasePath) {
-//     ImageProcessor processor;
-//     std::map<std::string, int> labelToIndex;
-//     std::vector<std::vector<int>> confusionMatrix(5, std::vector<int>(5,0));
+void TaskRunner::runTask7(const std::vector<std::pair<std::string, std::string>>& imageData, const std::string& databasePath) {
+    ImageProcessor processor;
+    std::map<std::string, int> labelToIndex;
+    std::vector<std::vector<int>> confusionMatrix(5, std::vector<int>(5,0));
+
+    for (const auto& data : imageData) {
+        cv::Mat frame = cv::imread(data.first, cv::IMREAD_COLOR);
+        if (frame.empty()) {
+            std::cerr << "Error: Image could not be loaded from " << data.first << std::endl;
+            continue;
+        }
+        std::vector<double> features = processor.extractFeatures(frame, frame, 10); 
+        std::string classifiedLabel = processor.classifyFeatureVector(features, processor.loadDatabase(databasePath));
+        
+        int trueIndex = labelToIndex[data.second]; // Map the true label to an index
+        int classifiedIndex = labelToIndex[classifiedLabel]; // Map the classified label to an index
+        confusionMatrix[trueIndex][classifiedIndex] += 1;
+    }
+
+    // Print or save the confusion matrix for reporting
+    for (const auto& row : confusionMatrix) {
+        for (int val : row) {
+            std::cout << val << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+// void TaskRunner::runTask8(const std::vector<std::pair<std::string, std::string>>& imageData, const std::string& databasePath, int k) {
+//     KNNClassifier knn(k); // Initialize the KNN classifier with k neighbors
+
+//     // Load your training data into the KNN classifier
+//     // This could be done by iterating over a dataset and calling knn.train(label, features) for each item
 
 //     for (const auto& data : imageData) {
 //         cv::Mat frame = cv::imread(data.first, cv::IMREAD_COLOR);
@@ -283,47 +318,17 @@ void TaskRunner::runTask6(const std::string& imagePath, int minSize) {
 //             std::cerr << "Error: Image could not be loaded from " << data.first << std::endl;
 //             continue;
 //         }
+
+//         // Extract features using your ImageProcessor or another method
+//         ImageProcessor processor;
 //         std::vector<double> features = processor.extractFeatures(frame, frame, /*minSize=*/10); // Adjust minSize as needed
-//         std::string classifiedLabel = processor.classifyFeatureVector(features, processor.loadDatabase(databasePath));
-        
-//         int trueIndex = labelToIndex[data.second]; // Map the true label to an index
-//         int classifiedIndex = labelToIndex[classifiedLabel]; // Map the classified label to an index
-//         confusionMatrix[trueIndex][classifiedIndex] += 1;
+
+//         // Classify the image using the KNN classifier
+//         std::string classifiedLabel = knn.classify(features);
+
+//         // Output the result, compare with true label, update confusion matrix, etc.
+//         std::cout << "Classified label: " << classifiedLabel << ", True label: " << data.second << std::endl;
 //     }
 
-//     // Print or save the confusion matrix for reporting
-//     for (const auto& row : confusionMatrix) {
-//         for (int val : row) {
-//             std::cout << val << " ";
-//         }
-//         std::cout << std::endl;
-//     }
-// }
-
-// void TaskRunner::runTask7(const std::vector<std::pair<std::string, std::string>>& imageData, const std::string& databasePath) {
-//     ImageProcessor processor;
-//     std::map<std::string, int> labelToIndex;
-//     std::vector<std::vector<int>> confusionMatrix(5, std::vector<int>(5,0));
-
-//     for (const auto& data : imageData) {
-//         cv::Mat frame = cv::imread(data.first, cv::IMREAD_COLOR);
-//         if (frame.empty()) {
-//             std::cerr << "Error: Image could not be loaded from " << data.first << std::endl;
-//             continue;
-//         }
-//         std::vector<double> features = processor.extractFeatures(frame, frame, /*minSize=*/10); // Adjust minSize as needed
-//         std::string classifiedLabel = processor.classifyFeatureVector(features, processor.loadDatabase(databasePath));
-        
-//         int trueIndex = labelToIndex[data.second]; // Map the true label to an index
-//         int classifiedIndex = labelToIndex[classifiedLabel]; // Map the classified label to an index
-//         confusionMatrix[trueIndex][classifiedIndex] += 1;
-//     }
-
-//     // Print or save the confusion matrix for reporting
-//     for (const auto& row : confusionMatrix) {
-//         for (int val : row) {
-//             std::cout << val << " ";
-//         }
-//         std::cout << std::endl;
-//     }
+//     // Additional code to handle the confusion matrix and output results can go here
 // }

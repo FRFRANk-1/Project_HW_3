@@ -10,6 +10,12 @@
     <ClCompile Include="D:\NEU study file\5330\Project_HW_3\ImageProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\NEU study file\5330\Project_HW_3\KNNClassifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\NEU study file\5330\Project_HW_3\labeler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="D:\NEU study file\5330\Project_HW_3\CMakeLists.txt" />

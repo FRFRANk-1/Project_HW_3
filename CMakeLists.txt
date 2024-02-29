@@ -1,3 +1,6 @@
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 cmake_minimum_required(VERSION 3.5.0)
 project(Project_HW_3 VERSION 0.1.0 LANGUAGES C CXX)
 
@@ -10,6 +13,8 @@ add_executable(Project_HW_3
 main.cpp
 TaskRunner.cpp
 ImageProcessor.cpp
+KNNClassifier.cpp
+labeler.cpp
 )
 
 target_compile_features(Project_HW_3 PUBLIC cxx_std_17)
