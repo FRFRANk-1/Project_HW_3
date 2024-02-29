@@ -5,6 +5,8 @@ github_link_this_project: https://github.com/FRFRANk-1/Project_HW_3
 
 ## Project_3 - "Real-time 2-D Object Recognition"
 
+## Travel days sumbssion apply: 4 days
+
 ## To run task 1: 
 <image_path> <kernel_size> <threshold_value> <max_val>
 
@@ -81,6 +83,8 @@ terminal input examples ->
 .\Project_HW_3 5 "D:/NEU study file/5330/Project_HW_3/Proj03Examples" "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_5/Project_HW_3Proj03Examplesimg1p3.jpg" 10
 ## To run task 6:
 
+From the previous task_5, we have already labeled, calcualted the extractFeatures and store the corresponding data of the images, by using classifyingFeaturevector and getBestDistance functions in task_6, ideally we could classify new image, due to the fact that task_5 functionalities wasn't being completed, the requirement of task_6 functionality has not been achieved. 
+
 terminal input examples -> 
 .\Project_HW_3 6 "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_2/img1p3_ 1 2/dilated_eroded.jpg" 10
 
@@ -88,11 +92,16 @@ terminal input examples ->
 
 ## To run task 7:
 
+Due to the fact that task_5, task_6 have not been completed implemented, the evaluation of the task_7 of system performance can processed as requirement expected.
+
 terminal input examples -> 
 .\Project_HW_3 7 "D:/NEU study file/5330/Project_HW_3/Report_Folder/task_2/img1p3_ 1 2/dilated_eroded.jpg"
 
 .\Project_HW_3 7 "D:/NEU study file/5330/Project_HW_3/Proj03Examples/img4p3.png" 
 
-## To run task 8:
-
 ## To run task 9:
+
+Ideally input Imagedatapath and KNNclassfier to process KNNClasscifier. Due to the fact that KNNclassifier has not been successfully implemeted, Task_9 can not properly match the task requirment.
+
+terminal input examples ->
+.\Project_HW_3 9 "D:/NEU study file/5330/Project_HW_3/Proj03Examples" 5 

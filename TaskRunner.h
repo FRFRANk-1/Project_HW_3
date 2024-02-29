@@ -20,7 +20,7 @@ public:
 
     void runTask7(const std::vector<std::pair<std::string, std::string>>& imageData, const std::string& databasePath);
 
-    void runTask8(const std::vector<std::pair<std::string, std::string>>& imageData, const std::string& databasePath, int k);
+    void runTask9(const std::vector<std::pair<std::string, std::string>>& imageData, const std::string& databasePath, int k);
 
 };
 

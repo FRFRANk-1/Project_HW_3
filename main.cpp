@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
         std::cerr << "For Task 5: [folder_path] [image_path] [min_size]" << std::endl;
         std::cerr << "For Task 6: [image_path] [min_size]" << std::endl;
         std::cerr << "For Task 7: [database_path]" << std::endl;
-        std::cerr << "For Task 8: [image_path] [min_size]" << std::endl;
+        std::cerr << "For Task 9: [image_path] [min_size]" << std::endl;
         return -1;
     }
 
@@ -103,24 +103,24 @@ int main(int argc, char** argv) {
                 std::string databasePath = argv[2];
                 runner.runTask7(imageData, databasePath);
             } break;
-        // case 8:
-        //     if(argc < 4) {
-        //         std::cerr << "Usage for Task 8: " << argv[0] << " 8 <database_path> <k>" << std::endl;
-        //         return -1;
-        //     } {
-        //         std::vector<std::pair<std::string, std::string>> imageData = {
-        //             {"D:/NEU study file/5330/Project_HW_3/Proj03Examples/img1p3.png", "label1"},
-        //             {"D:/NEU study file/5330/Project_HW_3/Proj03Examples/img2p3.png", "label2"},
-        //             {"D:/NEU study file/5330/Project_HW_3/Proj03Examples/img5p3.png", "label3"},
-        //             {"D:/NEU study file/5330/Project_HW_3/Report_Folder/task_2/img2p3_ 1 2/dilated_eroded.jpg", "label4"},
-        //             {"D:/NEU study file/5330/Project_HW_3/Report_Folder/task_2/img1p3_ 1 2/dilated_eroded.jpg", "label5"},
-        //             {"D:/NEU study file/5330/Project_HW_3/Report_Folder/task_2/img5p3_ 1 2/dilated_eroded.jpg", "label6"},
-        //         };
-        //         std::string databasePath = argv[2];
-        //         int k = std::stoi(argv[3]);
-        //         runner.runTask8(imageData, databasePath, k);
-        //     } 
-        //     break;
+        case 9:
+            if(argc < 4) {
+                std::cerr << "Usage for Task 9: " << argv[0] << " 8 <database_path> <k>" << std::endl;
+                return -1;
+            } {
+                std::vector<std::pair<std::string, std::string>> imageData = {
+                    {"D:/NEU study file/5330/Project_HW_3/Proj03Examples/img1p3.png", "label1"},
+                    {"D:/NEU study file/5330/Project_HW_3/Proj03Examples/img2p3.png", "label2"},
+                    {"D:/NEU study file/5330/Project_HW_3/Proj03Examples/img5p3.png", "label3"},
+                    {"D:/NEU study file/5330/Project_HW_3/Report_Folder/task_2/img2p3_ 1 2/dilated_eroded.jpg", "label4"},
+                    {"D:/NEU study file/5330/Project_HW_3/Report_Folder/task_2/img1p3_ 1 2/dilated_eroded.jpg", "label5"},
+                    {"D:/NEU study file/5330/Project_HW_3/Report_Folder/task_2/img5p3_ 1 2/dilated_eroded.jpg", "label6"},
+                };
+                std::string databasePath = argv[2];
+                int k = std::stoi(argv[3]);
+                runner.runTask9(imageData, databasePath, k);
+            } 
+            break;
         default:
             std::cerr << "Error: Unknown task number." << std::endl;
             return -1;

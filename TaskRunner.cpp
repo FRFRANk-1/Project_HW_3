@@ -200,8 +200,8 @@ void TaskRunner::runTask4(const std::string& imagePath, int minSize) {
 
 void TaskRunner::runTask5(const std::string& folderPath, const std::string& imagePath, int minSize) {
     
-    // labeler labeler(folderPath);
-    // labeler.Run();
+    labeler labeler(folderPath);
+    labeler.Run();
 
     std::string label;
     std::cout << "Enter label for this object: ";
@@ -246,7 +246,7 @@ void TaskRunner::runTask6(const std::string& imagePath, int minSize) {
     ImageProcessor processor;
     cv::Mat processedImage;
     std::vector<double> features = processor.extractFeatures(frame, processedImage, minSize);
-    auto database = processor.loadDatabase("D:/NEU study file/5330/Project_HW_3/Report_Folder/task_5/objectDB.txt");
+    auto database = processor.loadDatabase("D:/NEU study file/5330/Project_HW_3/Report_Folder/task_5/db.txt");
 
     std::string bestMatch = processor.classifyFeatureVector(features, database);
     double bestDistance = processor.getBestDistance(); 
@@ -306,29 +306,22 @@ void TaskRunner::runTask7(const std::vector<std::pair<std::string, std::string>>
     }
 }
 
-// void TaskRunner::runTask8(const std::vector<std::pair<std::string, std::string>>& imageData, const std::string& databasePath, int k) {
-//     KNNClassifier knn(k); // Initialize the KNN classifier with k neighbors
+void TaskRunner::runTask9(const std::vector<std::pair<std::string, std::string>>& imageData, const std::string& databasePath, int k) {
+    KNNClassifier knn(k); // Create a KNN classifier with k neighbors
 
-//     // Load your training data into the KNN classifier
-//     // This could be done by iterating over a dataset and calling knn.train(label, features) for each item
+    for (const auto& data : imageData) {
+        cv::Mat frame = cv::imread(data.first, cv::IMREAD_COLOR);
+        if (frame.empty()) {
+            std::cerr << "Error: Image could not be loaded from " << data.first << std::endl;
+            continue;
+        }
 
-//     for (const auto& data : imageData) {
-//         cv::Mat frame = cv::imread(data.first, cv::IMREAD_COLOR);
-//         if (frame.empty()) {
-//             std::cerr << "Error: Image could not be loaded from " << data.first << std::endl;
-//             continue;
-//         }
+        // Extract features using your ImageProcessor or another method
+        ImageProcessor processor;
+        std::vector<double> features = processor.extractFeatures(frame, frame, 10); 
 
-//         // Extract features using your ImageProcessor or another method
-//         ImageProcessor processor;
-//         std::vector<double> features = processor.extractFeatures(frame, frame, /*minSize=*/10); // Adjust minSize as needed
-
-//         // Classify the image using the KNN classifier
-//         std::string classifiedLabel = knn.classify(features);
-
-//         // Output the result, compare with true label, update confusion matrix, etc.
-//         std::cout << "Classified label: " << classifiedLabel << ", True label: " << data.second << std::endl;
-//     }
-
-//     // Additional code to handle the confusion matrix and output results can go here
-// }
+        // Classify the image using the KNN classifier
+        std::string classifiedLabel = knn.classify(features);
+        std::cout << "Classified label: " << classifiedLabel << ", True label: " << data.second << std::endl;
+    }
+}

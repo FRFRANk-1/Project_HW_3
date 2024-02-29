@@ -1,4 +1,0 @@
-Classification Process for: D:/NEU study file/5330/Project_HW_3/Proj03Examples/img5p3.png
-Feature vector size: 90
-Best match: Unknown with a distance of 1.79769e+308
-
